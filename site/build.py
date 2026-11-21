@@ -105,12 +105,18 @@ HEADER = f"""
 <a href="/about/">About</a>
 <a href="/contact/">Contact</a>
 </nav>
+<div class="site-search">
+<input id="siteSearch" type="search" placeholder="Search beds, sofas, mandirs..." autocomplete="off" aria-label="Search products">
+<div id="searchDrop" class="search-drop"></div>
+</div>
 <div class="header-cta">
 <a class="btn btn-ghost btn-sm" href="tel:+91{PHONE}">{ic('phone')} Call</a>
 <a class="btn btn-peach btn-sm" href="{wa_link('Hello Nidhi Homes Furniture! I want to enquire about furniture.')}">WhatsApp</a>
 </div>
 </div></header>
 """
+
+SEARCH_JS = '<script>\nvar __searchData=null;\nfunction __loadSearch(){if(__searchData)return Promise.resolve(__searchData);return fetch(\'/search.json\').then(function(r){return r.json()}).then(function(d){__searchData=d;return d;});}\nfunction __match(items,q){q=q.trim().toLowerCase();if(!q)return[];return items.filter(function(p){return (p.name+\' \'+p.category_name+\' \'+p.material+\' \'+p.size).toLowerCase().indexOf(q)>-1;});}\nfunction __dropHTML(list){if(!list.length)return \'<div class="no">No products found &mdash; try &quot;sofa&quot;, &quot;bed&quot; or &quot;mandir&quot;.</div>\';return list.slice(0,8).map(function(p){return \'<a href="\'+p.url+\'"><img src="\'+p.image+\'" alt=""><span><b>\'+p.name+\'</b><small>\'+p.category_name+\' &bull; \'+p.material+\'</small></span></a>\';}).join(\'\');}\ndocument.addEventListener(\'DOMContentLoaded\',function(){\nvar inp=document.getElementById(\'siteSearch\'),drop=document.getElementById(\'searchDrop\');\nif(!inp)return;\ninp.addEventListener(\'input\',function(){var q=inp.value;if(q.trim().length<2){drop.classList.remove(\'open\');drop.innerHTML=\'\';return;}__loadSearch().then(function(d){drop.innerHTML=__dropHTML(__match(d,q));drop.classList.add(\'open\');});});\ninp.addEventListener(\'keydown\',function(e){if(e.key===\'Enter\'){e.preventDefault();var q=inp.value.trim();if(q)location.href=\'/search/?q=\'+encodeURIComponent(q);}if(e.key===\'Escape\'){drop.classList.remove(\'open\');}});\ndocument.addEventListener(\'click\',function(e){if(!e.target.closest(\'.site-search\'))drop.classList.remove(\'open\');});\n});\n</script>'
 
 FOOTER = f"""
 <footer><div class="wrap">
@@ -151,7 +157,7 @@ function sendEnquiry(e){{
   return false;
 }}
 </script>
-</body>
+""" + SEARCH_JS + """</body>
 </html>
 """
 
@@ -464,6 +470,34 @@ def build_contact():
                 "Contact Nidhi Homes Furniture, Arsena, Agra. Call or WhatsApp 8076273509. Open Monday–Saturday 9 AM–6 PM.",
                 "/contact/") + HEADER + body + FOOTER
 
+
+# ---------------- Search results page ----------------
+def build_search_page():
+    body = """
+<section><div class="wrap">
+<div class="sec-head"><span class="eyebrow">Search</span><h2>Search products</h2><p id="searchMeta">Type a product name, material or category...</p></div>
+<div class="search-page-box">
+<input id="bigSearch" type="search" placeholder="Try &quot;king bed&quot;, &quot;leather sofa&quot;, &quot;mandir&quot;..." autocomplete="off" aria-label="Search products">
+</div>
+<div id="searchResults" class="prod-grid"></div>
+<p id="noResults" style="display:none;text-align:center;color:var(--muted);padding:30px 0">No products matched your search. Try a different word — e.g. "sofa", "bed", "kitchen" or "mandir".</p>
+</div></section>
+<script>
+(function(){
+var q=new URLSearchParams(location.search).get('q')||'';
+var inp=document.getElementById('bigSearch'),meta=document.getElementById('searchMeta'),grid=document.getElementById('searchResults'),none=document.getElementById('noResults');
+inp.value=q;
+function card(p){var wa='https://wa.me/918076273509?text='+encodeURIComponent('Hello Nidhi Homes Furniture! I want the price of '+p.name+' ('+p.id+').');return '<article class="prod-card"><a href="'+p.url+'"><img src="'+p.image+'" alt="'+p.name+'" loading="lazy"></a><div class="body"><h3><a href="'+p.url+'">'+p.name+'</a></h3><p class="spec">'+p.material+'</p><p class="size">'+p.size+' &bull; '+p.category_name+'</p><p class="price">Price on Enquiry<small>Best price on WhatsApp</small></p><a class="btn btn-peach btn-sm" href="'+wa+'">Enquire on WhatsApp</a></div></article>';}
+function render(){fetch('/search.json').then(function(r){return r.json()}).then(function(d){var needle=q.trim().toLowerCase();var res=needle?d.filter(function(p){return (p.name+' '+p.category_name+' '+p.material+' '+p.size).toLowerCase().indexOf(needle)>-1;}):d;meta.textContent=q?res.length+' result'+(res.length===1?'':'s')+' for "'+q+'"':d.length+' products — type above to search';grid.innerHTML=res.map(card).join('');none.style.display=res.length?'none':'block';});}
+render();
+inp.addEventListener('input',function(){q=inp.value;try{history.replaceState(null,'','/search/?q='+encodeURIComponent(q));}catch(e){}render();});
+})();
+</script>
+"""
+    return head("Search Products — Nidhi Homes Furniture, Agra",
+                "Search beds, sofas, dining tables, almirahs, modular kitchens, TV units and mandirs at Nidhi Homes Furniture, Arsena, Agra.",
+                "/search/") + HEADER + body + FOOTER
+
 # ---------------- Build ----------------
 def write(path, content):
     full = os.path.join(DIST, path.lstrip("/"))
@@ -490,6 +524,12 @@ def main():
         write(f"/products/{p['id'].lower()}/index.html", build_product(p, idx))
     write("/about/index.html", build_about())
     write("/contact/index.html", build_contact())
+    idx = [{"id": p["id"], "name": p["name"], "category": p["category"],
+            "category_name": CAT_BY_SLUG[p["category"]]["name"], "material": p["material"],
+            "size": p["size"], "url": f"/products/{p['id'].lower()}/",
+            "image": img_for(p, PRODS_BY_CAT[p["category"]].index(p) + 1)} for p in PRODUCTS]
+    write("/search.json", json.dumps(idx))
+    write("/search/index.html", build_search_page())
     # sitemap
     urls = ["/", "/about/", "/contact/"]
     urls += [f"/categories/{c['slug']}/" for c in CATS]
