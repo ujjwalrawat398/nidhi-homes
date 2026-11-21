@@ -23,6 +23,27 @@ PRODUCTS = load("products.json")
 DOMAIN = SITE["domain"].rstrip("/")
 WA = SITE["whatsapp"]
 PHONE = SITE["phone_display"]
+# ---- Inline SVG icons (Feather-style line icons) — no emoji anywhere ----
+_ICONS = {
+    "pin": '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>',
+    "phone": '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>',
+    "chat": '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>',
+    "truck": '<rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle>',
+    "tool": '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>',
+    "layers": '<polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline>',
+    "globe": '<circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>',
+    "sliders": '<line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line>',
+    "home": '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>',
+    "star": '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>',
+    "instagram": '<rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>',
+    "tag": '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>',
+}
+
+def ic(name):
+    return ('<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+            + _ICONS[name] + '</svg>')
+
 
 CAT_BY_SLUG = {c["slug"]: c for c in CATS}
 PRODS_BY_CAT = {}
@@ -67,7 +88,7 @@ def head(title, desc, path, og_img="/images/hero/hero.webp", extra=""):
 
 HEADER = f"""
 <div class="topstrip"><div class="wrap">
-<span>📍 {esc(SITE['address'])} &nbsp;•&nbsp; Mon–Sat 9 AM – 6 PM</span>
+<span>{ic('pin')} {esc(SITE['address'])} &nbsp;•&nbsp; Mon–Sat 9 AM – 6 PM</span>
 <span>Call / WhatsApp: <a href="tel:+91{PHONE}">+91 {PHONE}</a> &nbsp;•&nbsp; <b>★ {SITE['rating']} rated on Google</b></span>
 </div></div>
 <header class="site"><div class="wrap header-in">
@@ -83,7 +104,7 @@ HEADER = f"""
 <a href="/contact/">Contact</a>
 </nav>
 <div class="header-cta">
-<a class="btn btn-ghost btn-sm" href="tel:+91{PHONE}">📞 Call</a>
+<a class="btn btn-ghost btn-sm" href="tel:+91{PHONE}">{ic('phone')} Call</a>
 <a class="btn btn-peach btn-sm" href="{wa_link('Hello Nidhi Homes Furniture! I want to enquire about furniture.')}">WhatsApp</a>
 </div>
 </div></header>
@@ -118,7 +139,7 @@ FOOTER = f"""
 </div>
 <div class="bottom"><span>© 2026 Nidhi Homes Furniture, Arsena, Agra. All rights reserved.</span><span>Stylish Homes, Happy Lives</span></div>
 </div></footer>
-<a class="wa-float" href="{wa_link('Hello Nidhi Homes Furniture! I want to enquire about furniture.')}">💬 WhatsApp Us</a>
+<a class="wa-float" href="{wa_link('Hello Nidhi Homes Furniture! I want to enquire about furniture.')}">{ic('chat')} WhatsApp Us</a>
 <script>
 function sendEnquiry(e){{
   e.preventDefault();
@@ -233,10 +254,10 @@ def build_home():
 </section>
 
 <section class="trust"><div class="wrap">
-<div>🚚 Free Delivery<span>in Agra &amp; nearby areas</span></div>
-<div>🛠️ Custom Sizes<span>made to fit your home</span></div>
-<div>🪵 Solid Wood<span>quality you can feel</span></div>
-<div>🇮🇳 Pan India Delivery<span>anywhere in India</span></div>
+<div>{ic('truck')} Free Delivery<span>in Agra &amp; nearby areas</span></div>
+<div>{ic('tool')} Custom Sizes<span>made to fit your home</span></div>
+<div>{ic('layers')} Solid Wood<span>quality you can feel</span></div>
+<div>{ic('globe')} Pan India Delivery<span>anywhere in India</span></div>
 </div></section>
 
 <section><div class="wrap">
@@ -270,10 +291,10 @@ def build_home():
 <section style="background:var(--white)"><div class="wrap">
 <div class="sec-head"><span class="eyebrow">Why Nidhi Homes</span><h2>Why Agra trusts us</h2></div>
 <div class="why-grid">
-<div class="why"><div class="ico">🪵</div><h3>Solid Wood Quality</h3><p>Sheesham, teak and premium plywood — furniture built to last for years.</p></div>
-<div class="why"><div class="ico">📐</div><h3>Fully Customisable</h3><p>Size, wood, colour, finish — every piece made to your exact needs.</p></div>
-<div class="why"><div class="ico">🏠</div><h3>Visit &amp; Feel</h3><p>See the furniture in our Arsena showroom before you buy. Touch and feel the quality.</p></div>
-<div class="why"><div class="ico">⭐</div><h3>5.0 Google Rating</h3><p>Every single customer review is 5 stars. That is the Nidhi Homes promise.</p></div>
+<div class="why"><div class="ico">{ic('layers')}</div><h3>Solid Wood Quality</h3><p>Sheesham, teak and premium plywood — furniture built to last for years.</p></div>
+<div class="why"><div class="ico">{ic('sliders')}</div><h3>Fully Customisable</h3><p>Size, wood, colour, finish — every piece made to your exact needs.</p></div>
+<div class="why"><div class="ico">{ic('home')}</div><h3>Visit &amp; Feel</h3><p>See the furniture in our Arsena showroom before you buy. Touch and feel the quality.</p></div>
+<div class="why"><div class="ico">{ic('star')}</div><h3>5.0 Google Rating</h3><p>Every single customer review is 5 stars. That is the Nidhi Homes promise.</p></div>
 </div>
 </div></section>
 
@@ -283,9 +304,9 @@ def build_home():
 <div class="map-box"><iframe src="{esc(SITE['maps_embed'])}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Nidhi Homes Furniture on Google Maps"></iframe></div>
 <div class="visit">
 <h3>Nidhi Homes Furniture</h3>
-<p>📍 {esc(SITE['address'])}</p>
-<p>📞 <a href="tel:+91{PHONE}">+91 {PHONE}</a></p>
-<p>📸 <a href="{esc(SITE['instagram'])}" target="_blank" rel="noopener">@nidhi_homes_furniture</a></p>
+<p>{ic('pin')} {esc(SITE['address'])}</p>
+<p>{ic('phone')} <a href="tel:+91{PHONE}">+91 {PHONE}</a></p>
+<p>{ic('instagram')} <a href="{esc(SITE['instagram'])}" target="_blank" rel="noopener">@nidhi_homes_furniture</a></p>
 <div class="hours">
 <div><span>Monday – Saturday</span><b>9 AM – 6 PM</b></div>
 <div><span>Sunday</span><b>Closed</b></div>
@@ -368,10 +389,10 @@ def build_product(p, idx):
 <div><span>Customisation</span><b>Size, wood &amp; finish</b></div>
 <div><span>Delivery</span><b>Agra &amp; Pan India</b></div>
 </div>
-<div class="note">💰 <b>Price on Enquiry</b> — share your requirements on WhatsApp and we will send the best price with photos of the actual piece.</div>
+<div class="note">{ic('tag')} <b>Price on Enquiry</b> — share your requirements on WhatsApp and we will send the best price with photos of the actual piece.</div>
 <div class="cta-row">
 <a class="btn btn-peach" href="{wa_link('Hello Nidhi Homes Furniture! I want the price of ' + p['name'] + ' (' + p['id'] + ').')}">Enquire on WhatsApp</a>
-<a class="btn btn-ghost" href="tel:+91{PHONE}">📞 Call +91 {PHONE}</a>
+<a class="btn btn-ghost" href="tel:+91{PHONE}">{ic('phone')} Call +91 {PHONE}</a>
 </div>
 </div>
 </div>
@@ -405,10 +426,10 @@ def build_about():
 <section style="background:var(--white)"><div class="wrap">
 <div class="sec-head"><h2>Why Nidhi Homes</h2></div>
 <div class="why-grid">
-<div class="why"><div class="ico">🪵</div><h3>Solid Wood Quality</h3><p>Sheesham, teak and premium plywood — furniture built to last for years.</p></div>
-<div class="why"><div class="ico">📐</div><h3>Fully Customisable</h3><p>Size, wood, colour, finish — every piece made to your exact needs.</p></div>
-<div class="why"><div class="ico">🏠</div><h3>Visit &amp; Feel</h3><p>See the furniture in our Arsena showroom before you buy. Touch and feel the quality.</p></div>
-<div class="why"><div class="ico">⭐</div><h3>5.0 Google Rating</h3><p>Every single customer review is 5 stars. That is the Nidhi Homes promise.</p></div>
+<div class="why"><div class="ico">{ic('layers')}</div><h3>Solid Wood Quality</h3><p>Sheesham, teak and premium plywood — furniture built to last for years.</p></div>
+<div class="why"><div class="ico">{ic('sliders')}</div><h3>Fully Customisable</h3><p>Size, wood, colour, finish — every piece made to your exact needs.</p></div>
+<div class="why"><div class="ico">{ic('home')}</div><h3>Visit &amp; Feel</h3><p>See the furniture in our Arsena showroom before you buy. Touch and feel the quality.</p></div>
+<div class="why"><div class="ico">{ic('star')}</div><h3>5.0 Google Rating</h3><p>Every single customer review is 5 stars. That is the Nidhi Homes promise.</p></div>
 </div>
 </div></section>
 """
@@ -423,9 +444,9 @@ def build_contact():
 <div class="showroom"><div class="in">
 <div class="visit">
 <h3>Nidhi Homes Furniture</h3>
-<p>📍 {esc(SITE['address'])}</p>
-<p>📞 <a href="tel:+91{PHONE}">+91 {PHONE}</a></p>
-<p>📸 <a href="{esc(SITE['instagram'])}" target="_blank" rel="noopener">@nidhi_homes_furniture</a></p>
+<p>{ic('pin')} {esc(SITE['address'])}</p>
+<p>{ic('phone')} <a href="tel:+91{PHONE}">+91 {PHONE}</a></p>
+<p>{ic('instagram')} <a href="{esc(SITE['instagram'])}" target="_blank" rel="noopener">@nidhi_homes_furniture</a></p>
 <div class="hours">
 <div><span>Monday – Saturday</span><b>9 AM – 6 PM</b></div>
 <div><span>Sunday</span><b>Closed</b></div>
